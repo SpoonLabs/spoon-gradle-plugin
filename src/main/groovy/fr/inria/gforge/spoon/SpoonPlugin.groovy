@@ -1,6 +1,5 @@
 package fr.inria.gforge.spoon
 
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
@@ -19,7 +18,7 @@ class SpoonPlugin implements Plugin<Project> {
         project.afterEvaluate({
             def compileJavaTask = project.getTasksByName("compileJava", true).first();
 
-            project.task('spoon', type: SpoonTask) {
+            def spoonTask = project.task('spoon', type: SpoonTask) {
                 if (!project.spoon.srcFolder) {
                     project.spoon.srcFolder = project.file(project.sourceSets.main.java.srcDirs.first())
                 }
@@ -43,6 +42,9 @@ class SpoonPlugin implements Plugin<Project> {
                 log.debug("classpath: $compileJavaTask.classpath.asPath")
                 log.debug("----------------------------------------")
             }
+
+            // insert spoon task before compiling.
+            compileJavaTask.dependsOn spoonTask
         })
     }
 }
