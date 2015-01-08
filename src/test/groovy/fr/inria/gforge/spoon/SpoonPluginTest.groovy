@@ -8,6 +8,8 @@ import org.junit.Test
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class SpoonPluginTest {
@@ -109,6 +111,32 @@ class SpoonPluginTest {
         executeTask(project, 'spoon')
 
         assertTrue(project.file("${project.buildDir}/generated-sources/spoon").exists())
+    }
+
+    @Test
+    public void testClasspathWithAProjectWithCompileDependencies() throws Exception {
+        final Project project = buildEvaluatableProject()
+        project.repositories {
+            mavenCentral()
+        }
+        project.dependencies {
+            compile group: 'junit', name: 'junit', version: '4.11'
+        }
+        project.evaluate()
+
+        assertNotNull(project.tasks.spoon.classpath.files.find {
+            it.absolutePath.contains("junit${File.separator}junit${File.separator}4.11")
+        })
+    }
+
+    @Test
+    public void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
+        final Project project = buildEvaluatableProject()
+        project.evaluate()
+
+        assertNull(project.tasks.spoon.classpath.files.find {
+            it.absolutePath.contains("junit${File.separator}junit${File.separator}4.11")
+        })
     }
 
     private static Project buildEvaluatableProject() {

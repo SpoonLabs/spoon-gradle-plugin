@@ -17,6 +17,8 @@ class SpoonPlugin implements Plugin<Project> {
         project.extensions.create "spoon", SpoonExtension
 
         project.afterEvaluate({
+            def compileJavaTask = project.getTasksByName("compileJava", true).first();
+
             project.task('spoon', type: SpoonTask) {
                 if (!project.spoon.srcFolder) {
                     project.spoon.srcFolder = project.file(project.sourceSets.main.java.srcDirs.first())
@@ -30,6 +32,7 @@ class SpoonPlugin implements Plugin<Project> {
                 preserveFormatting = project.spoon.preserveFormatting
                 noClasspath = project.spoon.noClasspath
                 processors = project.spoon.processors
+                classpath = compileJavaTask.classpath
 
                 log.debug("----------------------------------------")
                 log.debug("source folder: $project.spoon.srcFolder")
@@ -37,6 +40,7 @@ class SpoonPlugin implements Plugin<Project> {
                 log.debug("preserving formatting: $project.spoon.preserveFormatting")
                 log.debug("no classpath: $project.spoon.noClasspath")
                 log.debug("processors: $project.spoon.processors")
+                log.debug("classpath: $compileJavaTask.classpath.asPath")
                 log.debug("----------------------------------------")
             }
         })
