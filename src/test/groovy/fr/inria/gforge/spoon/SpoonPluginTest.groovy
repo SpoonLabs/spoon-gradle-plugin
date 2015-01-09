@@ -4,6 +4,7 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
@@ -13,18 +14,22 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class SpoonPluginTest {
+    private Project project
+
+    @Before
+    public void setUp() throws Exception {
+        project = buildEvaluatableProject()
+    }
 
     @Test
     public void testSpoonPluginAddsSpoonTask() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.evaluate()
 
-        assertTrue(project.tasks.spoon instanceof SpoonTask)
+        assertTrue(this.project.tasks.spoon instanceof SpoonTask)
     }
 
     @Test
     public void testExtensionWithDefaultValues() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.evaluate()
 
         String expected = project.sourceSets.main.java.srcDirs.first()
@@ -37,8 +42,17 @@ class SpoonPluginTest {
     }
 
     @Test
+    public void testChangesDebugModeExtensionValue() throws Exception {
+        project.spoon {
+            debug = true
+        }
+        project.evaluate()
+
+        assertEquals(true, project.spoon.debug)
+    }
+
+    @Test
     public void testChangesSrcFolderExtensionValue() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             srcFolder = project.file('src/main/java')
         }
@@ -50,7 +64,6 @@ class SpoonPluginTest {
 
     @Test
     public void testChangesOutFolderExtensionValue() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             outFolder = project.file('build/spoon')
         }
@@ -62,7 +75,6 @@ class SpoonPluginTest {
 
     @Test
     public void testChangesPreserveFormattingExtensionValue() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             preserveFormatting = true
         }
@@ -73,7 +85,6 @@ class SpoonPluginTest {
 
     @Test
     public void testChangesNoClasspathExtensionValue() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             noClasspath = true
         }
@@ -84,7 +95,6 @@ class SpoonPluginTest {
 
     @Test
     public void testChangesProcessorsExtensionValue() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             processors = ['fr.inria.gforge.spoon.Processor']
         }
@@ -103,19 +113,17 @@ class SpoonPluginTest {
 
     @Test
     public void testExecutionOfSpoonTask() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.spoon {
             srcFolder = project.projectDir
         }
         project.evaluate()
-        executeTask(project, 'spoon')
+        executeSpoon(project)
 
         assertTrue(project.file("${project.buildDir}/generated-sources/spoon").exists())
     }
 
     @Test
     public void testClasspathWithAProjectWithCompileDependencies() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.repositories {
             mavenCentral()
         }
@@ -131,7 +139,6 @@ class SpoonPluginTest {
 
     @Test
     public void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
-        final Project project = buildEvaluatableProject()
         project.evaluate()
 
         assertNull(project.tasks.spoon.classpath.files.find {
@@ -139,17 +146,36 @@ class SpoonPluginTest {
         })
     }
 
+    private static executeSpoon(Project project) {
+        executeTask(project, 'spoon')
+    }
+
+    private static executeTask(Project project, String task) {
+        def spoon = project.getTasksByName(task, true).first()
+        spoon.actions.each { Action action ->
+            action.execute(spoon)
+        }
+    }
+
     private static Project buildEvaluatableProject() {
-        final Project project = ProjectBuilder.builder().build()
+        final Project project = getProject("")
         project.apply plugin: 'java'
         project.apply plugin: 'spoon'
         return project
     }
 
-    private static void executeTask(Project project, String task) {
-        def spoon = project.getTasksByName(task, true).first()
-        spoon.actions.each { Action action ->
-            action.execute(spoon)
+    private static Project buildEvaluatableProjectWithProjectPath(String projectPath) {
+        final Project project = getProject(projectPath)
+        project.apply plugin: 'java'
+        project.apply plugin: 'spoon'
+        return project
+    }
+
+    private static Project getProject(String projectPath) {
+        def builder = ProjectBuilder.builder()
+        if (!projectPath.empty) {
+            builder.withProjectDir(new File(projectPath))
         }
+        builder.build()
     }
 }

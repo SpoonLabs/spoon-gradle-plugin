@@ -1,6 +1,9 @@
 package fr.inria.gforge.spoon
 
 class SpoonExtension {
+    /** True to active the debug mode. */
+    def boolean debug
+
     /** Input directory for Spoon. */
     def File srcFolder
 

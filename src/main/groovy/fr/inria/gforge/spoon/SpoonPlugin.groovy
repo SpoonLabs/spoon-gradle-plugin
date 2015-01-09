@@ -33,18 +33,25 @@ class SpoonPlugin implements Plugin<Project> {
                 processors = project.spoon.processors
                 classpath = compileJavaTask.classpath
 
-                log.debug("----------------------------------------")
-                log.debug("source folder: $project.spoon.srcFolder")
-                log.debug("output folder: $project.spoon.outFolder")
-                log.debug("preserving formatting: $project.spoon.preserveFormatting")
-                log.debug("no classpath: $project.spoon.noClasspath")
-                log.debug("processors: $project.spoon.processors")
-                log.debug("classpath: $compileJavaTask.classpath.asPath")
-                log.debug("----------------------------------------")
+                printEnvironment(log.&debug, project, compileJavaTask)
+                if (project.spoon.debug) {
+                    printEnvironment(System.out.&println, project, compileJavaTask)
+                }
             }
 
             // insert spoon task before compiling.
             compileJavaTask.dependsOn spoonTask
         })
+    }
+
+    private static void printEnvironment(printer, project, compileJavaTask) {
+        printer "----------------------------------------"
+        printer "source folder: $project.spoon.srcFolder"
+        printer "output folder: $project.spoon.outFolder"
+        printer "preserving formatting: $project.spoon.preserveFormatting"
+        printer "no classpath: $project.spoon.noClasspath"
+        printer "processors: $project.spoon.processors"
+        printer "classpath: $compileJavaTask.classpath.asPath"
+        printer "----------------------------------------"
     }
 }
