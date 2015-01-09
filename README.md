@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/SpoonLabs/spoon-gradle-plugin.svg?branch=master)](https://travis-ci.org/SpoonLabs/spoon-gradle-plugin)
+
 # Spoon gradle plugin
 
 A gradle plugin to run spoon on a target project.

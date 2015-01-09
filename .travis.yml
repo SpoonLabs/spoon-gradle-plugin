@@ -1,0 +1,13 @@
+git:
+  depth: 1
+
+language: java
+
+jdk:
+  - oraclejdk7
+
+install:
+  - ./gradlew assemble
+
+script:
+  - ./gradlew check
