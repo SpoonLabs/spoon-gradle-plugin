@@ -32,9 +32,8 @@ class SpoonPluginTest {
     public void testExtensionWithDefaultValues() throws Exception {
         project.evaluate()
 
-        String expected = project.sourceSets.main.java.srcDirs.first()
-        assertEquals(expected, project.spoon.srcFolder.absolutePath)
-        expected = "${project.buildDir.absolutePath}/generated-sources/spoon"
+        assertEquals(null, project.spoon.srcFolders)
+        String expected = "${project.buildDir.absolutePath}/generated-sources/spoon"
         assertEquals(expected, project.spoon.outFolder.absolutePath)
         assertFalse(project.spoon.preserveFormatting)
         assertFalse(project.spoon.noClasspath)
@@ -52,14 +51,15 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesSrcFolderExtensionValue() throws Exception {
+    public void testChangesSrcFoldersExtensionValue() throws Exception {
         project.spoon {
-            srcFolder = project.file('src/main/java')
+            srcFolders = project.files('.')
         }
         project.evaluate()
 
-        final String expected = "${project.projectDir.absolutePath}/src/main/java"
-        assertEquals(expected, project.spoon.srcFolder.absolutePath)
+        assertEquals(1, project.spoon.srcFolders.getFiles().size())
+        final String expected = "${project.projectDir.absolutePath}"
+        assertEquals(expected, project.spoon.srcFolders.first().absolutePath)
     }
 
     @Test
@@ -114,7 +114,7 @@ class SpoonPluginTest {
     @Test
     public void testExecutionOfSpoonTask() throws Exception {
         project.spoon {
-            srcFolder = project.projectDir
+            srcFolders = project.files('.')
         }
         project.evaluate()
         executeSpoon(project)

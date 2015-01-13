@@ -15,38 +15,53 @@ class SpoonPlugin implements Plugin<Project> {
 
         project.extensions.create "spoon", SpoonExtension
 
+        // Adds task before the evaluation of the project to access of values
+        // overloaded by the developer.
         project.afterEvaluate({
             def compileJavaTask = project.getTasksByName("compileJava", true).first();
 
             def spoonTask = project.task('spoon', type: SpoonTask) {
-                if (!project.spoon.srcFolder) {
-                    project.spoon.srcFolder = project.file(project.sourceSets.main.java.srcDirs.first())
+                def sourceFolders = []
+                if (!project.spoon.srcFolders) {
+                    sourceFolders = transformListFileToListString(project, project.sourceSets.main.java.srcDirs)
+                } else {
+                    sourceFolders = transformListFileToListString(project, project.spoon.srcFolders)
                 }
                 if (!project.spoon.outFolder) {
                     project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
                 }
 
-                srcFolder = project.spoon.srcFolder
+                srcFolders = sourceFolders
                 outFolder = project.spoon.outFolder
                 preserveFormatting = project.spoon.preserveFormatting
                 noClasspath = project.spoon.noClasspath
                 processors = project.spoon.processors
                 classpath = compileJavaTask.classpath
 
-                printEnvironment(log.&debug, project, compileJavaTask)
+                printEnvironment(log.&debug, project, sourceFolders, compileJavaTask)
                 if (project.spoon.debug) {
-                    printEnvironment(System.out.&println, project, compileJavaTask)
+                    printEnvironment(System.out.&println, project, sourceFolders, compileJavaTask)
                 }
             }
 
-            // insert spoon task before compiling.
+            // Inserts spoon task before compiling.
             compileJavaTask.dependsOn spoonTask
         })
     }
 
-    private static void printEnvironment(printer, project, compileJavaTask) {
+    private static String[] transformListFileToListString(project, srcDirs) {
+        def inputs = []
+        srcDirs.each() {
+            if (project.file(it).exists()) {
+                inputs.add(it.getAbsolutePath())
+            }
+        };
+        return inputs
+    }
+
+    private static void printEnvironment(printer, project, sourceFolders, compileJavaTask) {
         printer "----------------------------------------"
-        printer "source folder: $project.spoon.srcFolder"
+        printer "source folder: $sourceFolders"
         printer "output folder: $project.spoon.outFolder"
         printer "preserving formatting: $project.spoon.preserveFormatting"
         printer "no classpath: $project.spoon.noClasspath"

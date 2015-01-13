@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import spoon.Launcher
 
 class SpoonTask extends DefaultTask {
-    def File srcFolder
+    def String[] srcFolders = []
     def File outFolder
     def boolean preserveFormatting
     def boolean noClasspath
@@ -15,9 +15,13 @@ class SpoonTask extends DefaultTask {
 
     @TaskAction
     void run() {
+        // No source code to spoon.
+        if (srcFolders.size() == 0) {
+            return;
+        }
         List<String> params = new LinkedList<>()
 
-        addParam(params, '-i', srcFolder.getAbsolutePath())
+        addParam(params, '-i', srcFolders.join(':'))
         addParam(params, '-o', outFolder.getAbsolutePath())
         addParam(params, '--compliance', '7')
         if (preserveFormatting) {
