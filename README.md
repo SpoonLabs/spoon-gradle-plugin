@@ -87,3 +87,7 @@ spoon {
 ## Download
 
 The plugin isn't yet available on Maven Central. For now, you must to clone this repository and install it on your maven local repository.
+
+## License
+
+The project spoon-gradle-plugin is all rights reserved at INRIA.
