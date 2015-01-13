@@ -44,13 +44,13 @@ spoon {
 
 ### Source and output folder
 
-You can specify at spoon its input and output directories with, respectively, `srcFolder` and `outFolder` parameters.
+You can specify at spoon its input and output directories with, respectively, `srcFolders` and `outFolder` parameters.
 
-These parameters are typed by `File`, so you must specify these information like the example below:
+These parameters are typed by `FileCollection` for source folders and `File` for output folder, so you must specify these information like the example below:
 
 ```
 spoon {
-    srcFolder = file('src/main/java')
+    srcFolders = files('src/main/java')
     outFolder = file('build/spoon')
 }
 ```
