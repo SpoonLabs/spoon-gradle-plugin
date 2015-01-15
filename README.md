@@ -2,11 +2,11 @@
 
 # Spoon gradle plugin
 
-A gradle plugin to run spoon on a target project.
+A gradle plugin to run source code transformations using spoon on a project built with Gradle.
 
-## Usage
+## Basic usage
 
-To use a plugin in a build script, you need to add the plugin classes to the build script's classpath.
+To use spoon-gradle-plugin, you need to add the plugin classes to the build script's classpath.
 To do this, you use a `buildscript` block. The following example shows how you might do this when
 the JAR containing the plugin has been published to a local repository:
 
@@ -30,40 +30,18 @@ apply plugin: 'spoon'
 
 The plugin has a task with the same name, `spoon` executed just before the compilation of your project.
 
-So you can execute `gradle build` in your project to launch the `spoon` task on your source code.
+Consequently, when `gradle build` is run on your project, the source code is first rewritten by `spoon` before compilation.
 
-## Inputs
+### How to add processors?
 
-You can configure some parameters in the plugin in the `spoon` block in your `build.gradle`:
+Spoon can use processors to analyze and transform source code.
 
-```
-spoon {
-    // Here is your custom parameters.
-}
-```
+To add processors, one must:
 
-### Source and output folder
+1. add a dependency  in the `buildscript` block. (you must specify the full qualified name)
+2. configure spoon.processors
 
-You can specify at spoon its input and output directories with, respectively, `srcFolders` and `outFolder` parameters.
-
-These parameters are typed by `FileCollection` for source folders and `File` for output folder, so you must specify these information like the example below:
-
-```
-spoon {
-    srcFolders = files('src/main/java')
-    outFolder = file('build/spoon')
-}
-```
-
-### Formatting
-
-You can preserving the formatting of your source code with the boolean parameter `preserveFormatting`.
-
-### Processors
-
-Spoon can use processors to process some codes during its analysis of a source code. The plugin supports processors and can be specified in the configuration.
-
-In the next usage, we would like to launch the processor name `fr.inria.gforge.spoon.processors.CountStatementProcessor` (you must specify the full qualified name) and the dependency necessary to locate the processor in the `buildscript` block.
+In the example below, we add processor `fr.inria.gforge.spoon.processors.CountStatementProcessor` and the dependency necessary to locate the processor.
 
 ```
 buildscript {
@@ -82,12 +60,27 @@ apply plugin: 'spoon'
 spoon {
     processors = ['fr.inria.gforge.spoon.processors.CountStatementProcessor']
 }
+
+```
+
+### Source folder
+
+spoon-gradle-plugin analyzes and transforms the standard sourceSets as follows:
+
+```
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/project'
+        }
+    }
+}
 ```
 
 ## Download
 
-The plugin isn't yet available on Maven Central. For now, you must to clone this repository and install it on your maven local repository.
+To use the plugin, you first clone this repository and install it on your maven local repository.
 
 ## License
 
-The project spoon-gradle-plugin is all rights reserved at INRIA.
+Copyright Inria, all rights reserved.
