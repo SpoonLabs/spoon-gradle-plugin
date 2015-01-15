@@ -1,11 +1,13 @@
 package fr.inria.gforge.spoon
 
+import org.gradle.api.file.FileCollection
+
 class SpoonExtension {
     /** True to active the debug mode. */
     def boolean debug
 
-    /** Input directory for Spoon. */
-    def File srcFolder
+    /** Input directories for Spoon. */
+    def FileCollection srcFolders
 
     /** Output directory where Spoon must generate his output (spooned source code). */
     def File outFolder
