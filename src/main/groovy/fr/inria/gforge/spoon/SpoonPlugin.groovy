@@ -45,6 +45,7 @@ class SpoonPlugin implements Plugin<Project> {
             }
 
             // Inserts spoon task before compiling.
+            compileJavaTask.source = project.spoon.outFolder
             compileJavaTask.dependsOn spoonTask
         })
     }
