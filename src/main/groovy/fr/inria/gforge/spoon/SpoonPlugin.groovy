@@ -38,8 +38,11 @@ class SpoonPlugin implements Plugin<Project> {
                 classpath = compileJavaTask.classpath
             }
 
+            // Changes source folder if the user don't would like use the original source.
+            if (!project.spoon.compileOriginalSources) {
+                compileJavaTask.source = project.spoon.outFolder
+            }
             // Inserts spoon task before compiling.
-            compileJavaTask.source = project.spoon.outFolder
             compileJavaTask.dependsOn spoonTask
         })
     }

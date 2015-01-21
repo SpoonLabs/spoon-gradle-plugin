@@ -52,8 +52,11 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                     )
                 }
 
+                // Changes source folder if the user don't would like use the original source.
+                if (!project.spoon.compileOriginalSources) {
+                    compileJavaTask.source = project.files("${project.buildDir}/generated/source", project.spoon.outFolder)
+                }
                 // Inserts spoon task before compiling.
-                compileJavaTask.source = project.files("${project.buildDir}/generated/source", project.spoon.outFolder)
                 compileJavaTask.dependsOn spoonTask
             }
         })
