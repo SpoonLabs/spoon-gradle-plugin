@@ -10,9 +10,8 @@ import spoon.compiler.SpoonCompiler
 import spoon.reflect.factory.FactoryImpl
 import spoon.support.DefaultCoreFactory
 import spoon.support.StandardEnvironment
-import spoon.support.compiler.jdt.JDTBasedSpoonCompiler
 
-class SpoonAndroidTask<T extends JDTBasedSpoonCompiler> extends DefaultTask {
+class SpoonAndroidTask extends DefaultTask {
     def String[] srcFolders = []
     def ConfigurableFileCollection srcPath
     def File outFolder
