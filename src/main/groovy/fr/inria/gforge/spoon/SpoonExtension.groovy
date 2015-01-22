@@ -20,4 +20,7 @@ class SpoonExtension {
 
     /** List of processors. */
     def String[] processors = []
+
+    /** True to active the compilation of original sources. */
+    def boolean compileOriginalSources
 }

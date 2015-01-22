@@ -1,10 +1,15 @@
 git:
   depth: 1
 
-language: java
+language: android
 
 jdk:
   - oraclejdk7
+
+android:
+  components:
+    - build-tools-21.1.2
+    - android-21
 
 install:
   - ./gradlew assemble

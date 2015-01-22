@@ -11,7 +11,6 @@ class SpoonPlugin implements Plugin<Project> {
         if (!hasJavaPlugin) {
             throw new IllegalStateException('The java plugin is required')
         }
-        def log = project.logger
 
         project.extensions.create "spoon", SpoonExtension
 
@@ -23,9 +22,9 @@ class SpoonPlugin implements Plugin<Project> {
             def spoonTask = project.task('spoon', type: SpoonTask) {
                 def sourceFolders = []
                 if (!project.spoon.srcFolders) {
-                    sourceFolders = transformListFileToListString(project, project.sourceSets.main.java.srcDirs)
+                    sourceFolders = Utils.transformListFileToListString(project, project.sourceSets.main.java.srcDirs)
                 } else {
-                    sourceFolders = transformListFileToListString(project, project.spoon.srcFolders)
+                    sourceFolders = Utils.transformListFileToListString(project, project.spoon.srcFolders)
                 }
                 if (!project.spoon.outFolder) {
                     project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
@@ -37,37 +36,14 @@ class SpoonPlugin implements Plugin<Project> {
                 noClasspath = project.spoon.noClasspath
                 processors = project.spoon.processors
                 classpath = compileJavaTask.classpath
-
-                printEnvironment(log.&debug, project, sourceFolders, compileJavaTask)
-                if (project.spoon.debug) {
-                    printEnvironment(System.out.&println, project, sourceFolders, compileJavaTask)
-                }
             }
 
+            // Changes source folder if the user don't would like use the original source.
+            if (!project.spoon.compileOriginalSources) {
+                compileJavaTask.source = project.spoon.outFolder
+            }
             // Inserts spoon task before compiling.
-            compileJavaTask.source = project.spoon.outFolder
             compileJavaTask.dependsOn spoonTask
         })
-    }
-
-    private static String[] transformListFileToListString(project, srcDirs) {
-        def inputs = []
-        srcDirs.each() {
-            if (project.file(it).exists()) {
-                inputs.add(it.getAbsolutePath())
-            }
-        };
-        return inputs
-    }
-
-    private static void printEnvironment(printer, project, sourceFolders, compileJavaTask) {
-        printer "----------------------------------------"
-        printer "source folder: $sourceFolders"
-        printer "output folder: $project.spoon.outFolder"
-        printer "preserving formatting: $project.spoon.preserveFormatting"
-        printer "no classpath: $project.spoon.noClasspath"
-        printer "processors: $project.spoon.processors"
-        printer "classpath: $compileJavaTask.classpath.asPath"
-        printer "----------------------------------------"
     }
 }

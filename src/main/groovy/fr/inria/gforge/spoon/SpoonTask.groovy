@@ -15,6 +15,12 @@ class SpoonTask extends DefaultTask {
 
     @TaskAction
     void run() {
+        def log = project.logger
+        printEnvironment(log.&debug)
+        if (project.spoon.debug) {
+            printEnvironment(System.out.&println)
+        }
+
         // No source code to spoon.
         if (srcFolders.size() == 0) {
             return;
@@ -40,6 +46,17 @@ class SpoonTask extends DefaultTask {
         def launcher = new Launcher()
         launcher.setArgs(params.toArray(new String[params.size()]))
         launcher.run()
+    }
+
+    private printEnvironment(printer) {
+        printer "----------------------------------------"
+        printer "source folder: $srcFolders"
+        printer "output folder: $outFolder"
+        printer "preserving formatting: $preserveFormatting"
+        printer "no classpath: $noClasspath"
+        printer "processors: $processors"
+        printer "classpath: $classpath.asPath"
+        printer "----------------------------------------"
     }
 
     private static void addParam(params, key, value) {
