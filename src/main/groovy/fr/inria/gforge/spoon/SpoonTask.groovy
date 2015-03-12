@@ -12,6 +12,7 @@ class SpoonTask extends DefaultTask {
     def boolean noClasspath
     def String[] processors = []
     def FileCollection classpath
+    def int compliance
 
     @TaskAction
     void run() {
@@ -29,7 +30,7 @@ class SpoonTask extends DefaultTask {
 
         addParam(params, '-i', srcFolders.join(':'))
         addParam(params, '-o', outFolder.getAbsolutePath())
-        addParam(params, '--compliance', '7')
+        addParam(params, '--compliance', '' + compliance)
         if (preserveFormatting) {
             addKey(params, '-f')
         }

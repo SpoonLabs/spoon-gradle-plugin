@@ -19,6 +19,7 @@ class SpoonAndroidTask extends DefaultTask {
     def boolean noClasspath
     def String[] processors = []
     def FileCollection classpath
+    def int compliance
 
     @TaskAction
     void run() {
@@ -33,7 +34,9 @@ class SpoonAndroidTask extends DefaultTask {
             return;
         }
 
-        SpoonCompiler compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment()));
+        def environment = new StandardEnvironment()
+        environment.setComplianceLevel(compliance)
+        SpoonCompiler compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
 
         // configure spoon
         compiler.setOutputDirectory(outFolder);

@@ -23,4 +23,7 @@ class SpoonExtension {
 
     /** True to active the compilation of original sources. */
     def boolean compileOriginalSources
+
+    /** Java version used to spoon target project. */
+    def int compliance = 7
 }

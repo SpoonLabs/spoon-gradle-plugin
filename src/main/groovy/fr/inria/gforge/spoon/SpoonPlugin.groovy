@@ -36,6 +36,7 @@ class SpoonPlugin implements Plugin<Project> {
                 noClasspath = project.spoon.noClasspath
                 processors = project.spoon.processors
                 classpath = compileJavaTask.classpath
+                compliance = project.spoon.compliance
             }
 
             // Changes source folder if the user don't would like use the original source.
