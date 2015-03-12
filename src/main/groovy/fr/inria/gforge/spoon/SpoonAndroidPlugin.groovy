@@ -50,6 +50,7 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                             "${project.buildDir}/generated/source/r/${buildTypeName}/",
                             "${project.buildDir}/generated/source/buildConfig/${buildTypeName}/"
                     )
+                    compliance = project.spoon.compliance
                 }
 
                 // Changes source folder if the user don't would like use the original source.

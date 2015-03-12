@@ -104,6 +104,16 @@ class SpoonPluginTest {
         assertEquals('fr.inria.gforge.spoon.Processor', project.spoon.processors.first())
     }
 
+    @Test
+    public void testChangesComplianceValue() throws Exception {
+        project.spoon {
+            compliance = 8
+        }
+        project.evaluate()
+
+        assertEquals(8, project.spoon.compliance)
+    }
+
     @Test(expected = PluginApplicationException.class)
     public void testLaunchPluginWithoutJavaPlugin() throws Exception {
         final Project project = ProjectBuilder.builder().build()
