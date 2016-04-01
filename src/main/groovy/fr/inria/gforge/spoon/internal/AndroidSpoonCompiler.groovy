@@ -3,7 +3,7 @@ package fr.inria.gforge.spoon.internal
 import org.apache.commons.io.IOUtils
 import spoon.Launcher
 import spoon.reflect.declaration.CtPackage
-import spoon.reflect.declaration.CtSimpleType
+import spoon.reflect.declaration.CtType
 import spoon.reflect.factory.Factory
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler
@@ -19,30 +19,27 @@ public class AndroidSpoonCompiler extends JDTBasedSpoonCompiler {
 
     private Collection<File> generatedDirectories = new ArrayList<File>();
 
-    void addGeneratedDirectory(File infile) throws IOException {
+    public void addGeneratedDirectory(File infile) throws IOException {
         addInputSource(infile);
         generatedDirectories.add(infile);
     }
 
     protected void generateProcessedSourceFilesUsingCUs() throws Exception {
 
-        getFactory().getEnvironment().debugMessage(
-                "Generating source using compilation units...");
+        getFactory().getEnvironment().debugMessage("Generating source using compilation units...");
         // Check output directory
-        if (getOutputDirectory() == null)
-            throw new RuntimeException(
-                    "You should set output directory before generating source files");
+        if (getSourceOutputDirectory() == null)
+            throw new RuntimeException("You should set output directory before generating source files");
         // Create spooned dir
-        if (getOutputDirectory().isFile())
+        if (getSourceOutputDirectory().isFile())
             throw new RuntimeException("Output must be a directory");
-        if (!getOutputDirectory().exists()) {
-            if (!getOutputDirectory().mkdirs())
+        if (!getSourceOutputDirectory().exists()) {
+            if (!getSourceOutputDirectory().mkdirs())
                 throw new RuntimeException("Error creating output directory");
         }
-        setOutputDirectory(getOutputDirectory().getCanonicalFile());
+        setSourceOutputDirectory(getSourceOutputDirectory().getCanonicalFile());
 
-        getFactory().getEnvironment().debugMessage(
-                "Generating source files to: " + getOutputDirectory());
+        getFactory().getEnvironment().debugMessage("Generating source files to: " + getSourceOutputDirectory());
 
         List<File> printedFiles = new ArrayList<File>();
         printing:
@@ -54,22 +51,20 @@ public class AndroidSpoonCompiler extends JDTBasedSpoonCompiler {
                     continue printing;
             }
 
-            getFactory().getEnvironment().debugMessage(
-                    "Generating source for compilation unit: " + cu.getFile());
+            getFactory().getEnvironment().debugMessage("Generating source for compilation unit: " + cu.getFile());
 
-            CtSimpleType<?> element = cu.getMainType();
+            CtType<?> element = cu.getMainType();
 
             CtPackage pack = element.getPackage();
 
             // create package directory
             File packageDir;
-            if (pack.getQualifiedName()
-                    .equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-                packageDir = new File(getOutputDirectory().getAbsolutePath());
+            if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+                packageDir = new File(getSourceOutputDirectory().getAbsolutePath());
             } else {
                 char dot = '.';
                 // Create current package dir
-                packageDir = new File(getOutputDirectory().getAbsolutePath()
+                packageDir = new File(getSourceOutputDirectory().getAbsolutePath()
                         + File.separatorChar
                         + pack.getQualifiedName().replace(dot, File.separatorChar));
             }
@@ -87,8 +82,7 @@ public class AndroidSpoonCompiler extends JDTBasedSpoonCompiler {
                 file.createNewFile();
 
                 // the path must be given relatively to to the working directory
-                InputStream is = getCompilationUnitInputStream(cu.getFile()
-                        .getPath());
+                InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
 
                 IOUtils.copy(is, new FileOutputStream(file));
 
@@ -97,7 +91,7 @@ public class AndroidSpoonCompiler extends JDTBasedSpoonCompiler {
                 }
 
             } catch (Exception e) {
-                Launcher.logger.error(e.getMessage(), e);
+                Launcher.LOGGER.error(e.getMessage(), e);
             }
         }
     }
