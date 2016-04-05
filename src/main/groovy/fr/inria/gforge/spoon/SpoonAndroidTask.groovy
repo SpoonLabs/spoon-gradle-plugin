@@ -36,11 +36,11 @@ class SpoonAndroidTask extends DefaultTask {
 
         def environment = new StandardEnvironment()
         environment.setComplianceLevel(compliance)
+        environment.setNoClasspath(noClasspath)
         SpoonCompiler compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
 
         // configure spoon
-        compiler.setOutputDirectory(outFolder);
-        compiler.factory.environment.setDebug(project.spoon.debug);
+        compiler.setSourceOutputDirectory(outFolder);
         compiler.setSourceClasspath(classpath.asPath.split(":"))
         srcFolders.each { directory -> compiler.addInputSource(new File(directory)) }
         srcPath.files.each { directory -> compiler.addGeneratedDirectory(directory) }

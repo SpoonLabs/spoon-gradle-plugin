@@ -3,16 +3,19 @@ apply plugin: 'maven'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven {
+        url 'https://repo.eclipse.org/content/repositories/eclipse-staging/'
+    }
 }
 
 dependencies {
+    compile 'fr.inria.gforge.spoon:spoon-core:5.1.0'
+    compile 'com.android.tools.build:gradle:0.14.2'
+
     compile gradleApi()
     compile localGroovy()
-    compile group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '3.0'
-    compile group: 'com.android.tools.build', name: 'gradle', version: '0.14.2'
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'junit:junit:4.11'
 }
 
 group = 'fr.inria.gforge.spoon'

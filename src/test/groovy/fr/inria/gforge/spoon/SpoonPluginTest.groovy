@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
@@ -122,6 +123,7 @@ class SpoonPluginTest {
     }
 
     @Test
+    @Ignore // https://issues.gradle.org/browse/GRADLE-1715
     public void testExecutionOfSpoonTask() throws Exception {
         project.spoon {
             srcFolders = project.files('.')
