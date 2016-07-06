@@ -34,7 +34,7 @@ class SpoonAndroidPluginTest {
         assertEquals(null, project.spoon.srcFolders)
         String expected = "${project.buildDir.absolutePath}/generated-sources/spoon"
         assertEquals(expected, project.spoon.outFolder.absolutePath)
-        assertFalse(project.spoon.preserveFormatting)
+        assertTrue(project.spoon.preserveFormatting)
         assertFalse(project.spoon.noClasspath)
         assertEquals(0, project.spoon.processors.size())
     }
@@ -133,7 +133,7 @@ class SpoonAndroidPluginTest {
     }
 
     private Project buildEvaluatableProject(String androidPlugin) {
-        final Project project = ProjectBuilder.builder().build()
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/resources/android-app")).build()
         project.apply plugin: androidPlugin
         project.apply plugin: 'spoon-android'
         project.android {

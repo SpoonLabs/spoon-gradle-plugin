@@ -3,20 +3,36 @@ apply plugin: 'maven'
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://repo.eclipse.org/content/repositories/eclipse-staging/'
+    jcenter()
+    maven{
+        url 'http://spoon.gforge.inria.fr/repositories/releases'
     }
+}
+configurations {
+    releaseJars
 }
 
 dependencies {
-    compile 'fr.inria.gforge.spoon:spoon-core:5.1.0'
-    compile 'com.android.tools.build:gradle:0.14.2'
 
     compile gradleApi()
     compile localGroovy()
-
+    compile('fr.inria.gforge.spoon:spoon-core:5.2.0') {
+        exclude group: 'org.eclipse.jdt', module: 'org.eclipse.jdt.core'
+    }
+    releaseJars 'org.eclipse.jdt:org.eclipse.jdt.core:3.12.0.v20160516-2131'
     testCompile 'junit:junit:4.11'
+    compile 'com.android.tools.build:gradle:2.1.2'
+
+}
+
+jar{
+    from (configurations.releaseJars.collect {it.isDirectory() ? it : zipTree(it)}){
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+    }
 }
 
 group = 'fr.inria.gforge.spoon'
-version = '1.0-SNAPSHOT'
+version ='1.0-SNAPSHOT'

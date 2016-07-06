@@ -4,6 +4,8 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 
 class SpoonAndroidPlugin implements Plugin<Project> {
     @Override
@@ -25,41 +27,60 @@ class SpoonAndroidPlugin implements Plugin<Project> {
         project.afterEvaluate({
             def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
             variants.all { variant ->
-                def buildTypeName = variant.buildType.name.capitalize()
-                def projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
-                if (projectFlavorNames.isEmpty()) {
-                    projectFlavorNames = [""]
-                }
-                def projectFlavorName = projectFlavorNames.join()
-                def variationName = "$projectFlavorName$buildTypeName"
+                String variantName = variant.name
+                def variantDirName = variant.dirName
 
                 def compileJavaTask = variant.javaCompile;
+                if (!project.spoon.outFolder) {
+                    project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
+                }
+                def spoonOutFolder = project.file("${project.spoon.outFolder.path}/$variantDirName")
 
-                def spoonTask = project.task("spoon${variationName}", type: SpoonAndroidTask, dependsOn: "generate${variationName}Sources") {
-                    if (!project.spoon.outFolder) {
-                        project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
-                    }
 
-                    srcFolders = Utils.transformListFileToListString(project, project.android.sourceSets.main.java.srcDirs)
-                    outFolder = project.spoon.outFolder
+                FileCollection variantSrcFolders = ((FileTree) compileJavaTask.source).filter { f -> !f.path.contains(project.buildDir.path) }
+                FileCollection variantSrcPath = ((FileTree) compileJavaTask.source).minus(variantSrcFolders)
+
+
+                def spoonTask = project.task("spoon${variantName.capitalize()}", type: SpoonAndroidTask, dependsOn: "generate${variantName.capitalize()}Sources") {
+                    srcFolders = variantSrcFolders
+                    outFolder = spoonOutFolder
                     preserveFormatting = project.spoon.preserveFormatting
                     noClasspath = project.spoon.noClasspath
                     processors = project.spoon.processors
                     classpath = compileJavaTask.classpath + Utils.getAndroidSdk(project)
-                    srcPath = project.files(
-                            "${project.buildDir}/generated/source/r/${buildTypeName}/",
-                            "${project.buildDir}/generated/source/buildConfig/${buildTypeName}/"
-                    )
+                    srcPath = variantSrcPath
                     compliance = project.spoon.compliance
                 }
 
                 // Changes source folder if the user don't would like use the original source.
                 if (!project.spoon.compileOriginalSources) {
-                    compileJavaTask.source = project.files("${project.buildDir}/generated/source", project.spoon.outFolder)
+                    def files = variantSrcPath.files
+                    files << spoonOutFolder;
+                    // convert file path to root folder path
+                    compileJavaTask.source =
+                            {
+                                def p = /(${project.buildDir}\/generated\/source\/.*\/${variantDirName}).*/
+                                def paths = []
+                                paths << spoonOutFolder.path;
+                                variantSrcPath.files.each {
+                                    File file ->
+                                        def m = file.path =~ p;
+                                        if (m) {
+                                            def path = m[0][1]
+                                            if(!paths.contains(path))
+                                                paths << path;
+                                        }
+                                }
+                                return project.files(paths);
+                            }
+
                 }
                 // Inserts spoon task before compiling.
                 compileJavaTask.dependsOn spoonTask
             }
-        })
+        }
+
+        )
     }
+
 }
