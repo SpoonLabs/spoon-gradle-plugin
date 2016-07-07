@@ -13,7 +13,7 @@ class SpoonExtension {
     def File outFolder
 
     /** Tells to spoon that it must preserve formatting of original source code. */
-    def boolean preserveFormatting = true;
+    def boolean preserveFormatting;
 
     /** Tells to spoon that it must not assume a full classpath. */
     def boolean noClasspath

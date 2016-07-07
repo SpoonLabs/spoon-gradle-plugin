@@ -24,62 +24,61 @@ class SpoonAndroidPlugin implements Plugin<Project> {
 
         // Adds task before the evaluation of the project to access of values
         // overloaded by the developer.
-        project.afterEvaluate({
-            def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
-            variants.all { variant ->
-                String variantName = variant.name
-                def variantDirName = variant.dirName
+        project.afterEvaluate(
+                {
+                    def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
+                    variants.all { variant ->
+                        String variantName = variant.name
+                        def variantDirName = variant.dirName
 
-                def compileJavaTask = variant.javaCompile;
-                if (!project.spoon.outFolder) {
-                    project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
-                }
-                def spoonOutFolder = project.file("${project.spoon.outFolder.path}/$variantDirName")
-
-
-                FileCollection variantSrcFolders = ((FileTree) compileJavaTask.source).filter { f -> !f.path.contains(project.buildDir.path) }
-                FileCollection variantSrcPath = ((FileTree) compileJavaTask.source).minus(variantSrcFolders)
+                        def compileJavaTask = variant.javaCompile;
+                        if (!project.spoon.outFolder) {
+                            project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
+                        }
+                        def spoonOutFolder = project.file("${project.spoon.outFolder.path}/$variantDirName")
 
 
-                def spoonTask = project.task("spoon${variantName.capitalize()}", type: SpoonAndroidTask, dependsOn: "generate${variantName.capitalize()}Sources") {
-                    srcFolders = variantSrcFolders
-                    outFolder = spoonOutFolder
-                    preserveFormatting = project.spoon.preserveFormatting
-                    noClasspath = project.spoon.noClasspath
-                    processors = project.spoon.processors
-                    classpath = compileJavaTask.classpath + Utils.getAndroidSdk(project)
-                    srcPath = variantSrcPath
-                    compliance = project.spoon.compliance
-                }
+                        FileCollection variantSrcFolders = ((FileTree) compileJavaTask.source).filter { f -> !f.path.contains(project.buildDir.path) }
+                        FileCollection variantSrcPath = ((FileTree) compileJavaTask.source).minus(variantSrcFolders)
 
-                // Changes source folder if the user don't would like use the original source.
-                if (!project.spoon.compileOriginalSources) {
-                    def files = variantSrcPath.files
-                    files << spoonOutFolder;
-                    // convert file path to root folder path
-                    compileJavaTask.source =
-                            {
-                                def p = /(${project.buildDir}\/generated\/source\/.*\/${variantDirName}).*/
-                                def paths = []
-                                paths << spoonOutFolder.path;
-                                variantSrcPath.files.each {
-                                    File file ->
-                                        def m = file.path =~ p;
-                                        if (m) {
-                                            def path = m[0][1]
-                                            if(!paths.contains(path))
-                                                paths << path;
+
+                        def spoonTask = project.task("spoon${variantName.capitalize()}", type: SpoonAndroidTask, dependsOn: "generate${variantName.capitalize()}Sources") {
+                            srcFolders = variantSrcFolders
+                            outFolder = spoonOutFolder
+                            preserveFormatting = project.spoon.preserveFormatting
+                            noClasspath = project.spoon.noClasspath
+                            processors = project.spoon.processors
+                            classpath = compileJavaTask.classpath + Utils.getAndroidSdk(project)
+                            srcPath = variantSrcPath
+                            compliance = project.spoon.compliance
+                        }
+
+                        // Changes source folder if the user don't would like use the original source.
+                        if (!project.spoon.compileOriginalSources) {
+                            def files = variantSrcPath.files
+                            files << spoonOutFolder;
+                            // convert file path to root folder path
+                            compileJavaTask.source =
+                                    {
+                                        def p = /(${project.buildDir}\/generated\/source\/.*\/${variantDirName}).*/
+                                        def paths = []
+                                        paths << spoonOutFolder.path;
+                                        variantSrcPath.files.each {
+                                            File file ->
+                                                def m = file.path =~ p;
+                                                if (m) {
+                                                    def path = m[0][1]
+                                                    if (!paths.contains(path))
+                                                        paths << path;
+                                                }
                                         }
-                                }
-                                return project.files(paths);
-                            }
-
+                                        return project.files(paths);
+                                    }
+                        }
+                        // Inserts spoon task before compiling.
+                        compileJavaTask.dependsOn spoonTask
+                    }
                 }
-                // Inserts spoon task before compiling.
-                compileJavaTask.dependsOn spoonTask
-            }
-        }
-
         )
     }
 

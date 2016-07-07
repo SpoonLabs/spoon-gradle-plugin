@@ -3,7 +3,6 @@ apply plugin: 'maven'
 
 repositories {
     mavenCentral()
-    jcenter()
     maven{
         url 'http://spoon.gforge.inria.fr/repositories/releases'
     }

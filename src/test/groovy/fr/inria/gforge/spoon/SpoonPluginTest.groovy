@@ -36,7 +36,7 @@ class SpoonPluginTest {
         assertEquals(null, project.spoon.srcFolders)
         String expected = "${project.buildDir.absolutePath}/generated-sources/spoon"
         assertEquals(expected, project.spoon.outFolder.absolutePath)
-        assertTrue(project.spoon.preserveFormatting)
+        assertFalse(project.spoon.preserveFormatting)
         assertFalse(project.spoon.noClasspath)
         assertEquals(0, project.spoon.processors.size())
     }
