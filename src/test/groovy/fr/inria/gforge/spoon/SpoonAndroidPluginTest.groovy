@@ -133,7 +133,7 @@ class SpoonAndroidPluginTest {
     }
 
     private Project buildEvaluatableProject(String androidPlugin) {
-        final Project project = ProjectBuilder.builder().build()
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/resources/android-app")).build()
         project.apply plugin: androidPlugin
         project.apply plugin: 'spoon-android'
         project.android {

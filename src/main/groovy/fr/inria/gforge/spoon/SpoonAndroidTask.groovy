@@ -7,13 +7,14 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.TaskAction
 import spoon.OutputType
 import spoon.compiler.SpoonCompiler
+import spoon.processing.Processor
 import spoon.reflect.factory.FactoryImpl
 import spoon.support.DefaultCoreFactory
 import spoon.support.StandardEnvironment
 
 class SpoonAndroidTask extends DefaultTask {
-    def String[] srcFolders = []
-    def ConfigurableFileCollection srcPath
+    def FileCollection srcFolders
+    def FileCollection srcPath
     def File outFolder
     def boolean preserveFormatting
     def boolean noClasspath
@@ -37,24 +38,29 @@ class SpoonAndroidTask extends DefaultTask {
         def environment = new StandardEnvironment()
         environment.setComplianceLevel(compliance)
         environment.setNoClasspath(noClasspath)
+        environment.setPreserveLineNumbers(preserveFormatting)
         SpoonCompiler compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
 
         // configure spoon
         compiler.setSourceOutputDirectory(outFolder);
         compiler.setSourceClasspath(classpath.asPath.split(":"))
-        srcFolders.each { directory -> compiler.addInputSource(new File(directory)) }
+
+        srcFolders.files.each { directory -> compiler.addInputSource(directory) }
         srcPath.files.each { directory -> compiler.addGeneratedDirectory(directory) }
 
         // Build spoon model
         compiler.build();
 
-        compiler.process(Arrays.asList(processors));
+        Collection<Processor> processorsClasses = processors.collect {
+            it -> this.class.classLoader.loadClass(it)?.newInstance()
+        } as Collection<Processor>
+        compiler.process(processorsClasses);
         compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
     }
 
     def printEnvironment(printer) {
         printer "----------------------------------------"
-        printer "source folder: $srcFolders"
+        printer "source folder: $srcFolders.asPath"
         printer "output folder: $outFolder"
         printer "src path: $srcPath.asPath"
         printer "preserving formatting: $preserveFormatting"
