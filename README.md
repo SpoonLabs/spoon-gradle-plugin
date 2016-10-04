@@ -11,9 +11,10 @@ To use spoon-gradle-plugin, you need to add the plugin classes to the build scri
 ```groovy
 buildscript {
     repositories {
-        maven {
-            mavenLocal()
-        }
+	   mavenLocal()
+           maven {
+              url 'http://spoon.gforge.inria.fr/repositories/'
+           }
     }
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
