@@ -8,8 +8,8 @@ jdk:
 
 android:
   components:
-    - build-tools-21.1.2
-    - android-21
+    - build-tools-25.0.2
+    - android-25
 
 install:
   - ./gradlew assemble
