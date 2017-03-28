@@ -2,11 +2,10 @@ package fr.inria.gforge.spoon
 
 import fr.inria.gforge.spoon.internal.AndroidSpoonCompiler
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.TaskAction
 import spoon.OutputType
-import spoon.compiler.SpoonCompiler
+import spoon.SpoonModelBuilder
 import spoon.processing.Processor
 import spoon.reflect.factory.FactoryImpl
 import spoon.support.DefaultCoreFactory
@@ -39,7 +38,7 @@ class SpoonAndroidTask extends DefaultTask {
         environment.setComplianceLevel(compliance)
         environment.setNoClasspath(noClasspath)
         environment.setPreserveLineNumbers(preserveFormatting)
-        SpoonCompiler compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
+        SpoonModelBuilder compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
 
         // configure spoon
         compiler.setSourceOutputDirectory(outFolder);
