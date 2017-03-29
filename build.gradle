@@ -38,5 +38,90 @@ test {
     }
 }
 
+apply from: 'nexusConfig.gradle'
+
+ext.siteUrl = "https://github.com/SpoonLabs/spoon-gradle-plugin"
+
+ext.commonLicense = {
+    name 'GNU Lesser General Public License (LGPL)'
+    url 'http://www.gnu.org/licenses/lgpl.html'
+}
+
+ext.devs = [
+        {
+            id 'GerardPaligot'
+            name 'Gerard Paligot'
+            email 'gerard.paligot.inria.fr'
+        },
+        {
+            id 'surli'
+            name 'Simon Urli'
+            email 'simon.urli@inria.fr'
+        },
+        {
+            id 'monperrus'
+            name 'Martin Monperrus'
+            email 'martin.monperrus@univ-lille1.fr'
+        },
+        {
+            id 'paillardf'
+            name 'Florian Paillard'
+            email 'paillard.f@gmail.com'
+        },
+        {
+            id 'petitpre'
+            name 'Nicolas Petitprez'
+            email 'nicolas.petitprez@inria.fr'
+        }
+]
+
+
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'groovydoc'
+    from groovydoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.project {
+            name 'Spoon Gradle Plugin'
+            artifactId 'spoon-gradle-plugin'
+            packaging 'jar'
+            description 'A gradle plugin to run spoon '
+
+            url siteUrl
+
+            scm {
+                connection 'scm:git:https://github.com/SpoonLabs/spoon-gradle-plugin.git'
+                developerConnection 'scm:git:https://github.com/SpoonLabs/spoon-gradle-plugin'
+                url siteUrl
+            }
+
+            licenses {
+                license commonLicense
+            }
+
+            organization {
+                name 'INRIA'
+                url 'http://www.inria.fr'
+            }
+
+            developers {
+                devs.collect({ developer it })
+            }
+        }
+    }
+}
+
+
 group = 'fr.inria.gforge.spoon'
 version ='1.0-SNAPSHOT'
