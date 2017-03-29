@@ -15,4 +15,4 @@ install:
   - ./gradlew assemble
 
 script:
-  - ./gradlew check
+  - ./gradlew check --stacktrace
