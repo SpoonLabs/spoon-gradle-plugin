@@ -12,14 +12,12 @@ To use spoon-gradle-plugin, you need to add the plugin classes to the build scri
 buildscript {
     repositories {
 	   mavenLocal()
-           maven {
-              url 'http://spoon.gforge.inria.fr/repositories/'
-           }
+       mavenCentral()
     }
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
 		          name: 'spoon-gradle-plugin', 
-		          version:'1.0-SNAPSHOT'
+		          version:'1.0'
     }
 }
 
@@ -46,11 +44,12 @@ In the example below, we add processor `fr.inria.gforge.spoon.processors.CountSt
 buildscript {
     repositories {
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
 			      name: 'spoon-gradle-plugin', 
-			      version:'1.0-SNAPSHOT'
+			      version:'1.0'
         classpath group: 'fr.inria.gforge.spoon', 
 			      name: 'spoon-processors', 
 			      version:'1.0-SNAPSHOT'
