@@ -137,8 +137,8 @@ class SpoonAndroidPluginTest {
         project.apply plugin: androidPlugin
         project.apply plugin: 'spoon-android'
         project.android {
-            compileSdkVersion 21
-            buildToolsVersion "21.1.2"
+            compileSdkVersion 25
+            buildToolsVersion "25.0.2"
         }
         project
     }
