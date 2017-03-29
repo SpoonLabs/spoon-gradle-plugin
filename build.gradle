@@ -83,7 +83,7 @@ task javadocJar(type: Jar, dependsOn: groovydoc) {
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+    from sourceSets.main.groovy.srcDirs
 }
 
 artifacts {
@@ -124,4 +124,4 @@ uploadArchives {
 
 
 group = 'fr.inria.gforge.spoon'
-version ='1.0-SNAPSHOT'
+version ='1.0'
