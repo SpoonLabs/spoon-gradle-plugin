@@ -48,6 +48,7 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                             preserveFormatting = project.spoon.preserveFormatting
                             noClasspath = project.spoon.noClasspath
                             processors = project.spoon.processors
+                            processorsInstance = project.spoon.processorsInstance
                             classpath = compileJavaTask.classpath + Utils.getAndroidSdk(project)
                             srcPath = variantSrcPath
                             compliance = project.spoon.compliance

@@ -18,6 +18,7 @@ class SpoonAndroidTask extends DefaultTask {
     def boolean preserveFormatting
     def boolean noClasspath
     def String[] processors = []
+    Processor[] processorsInstance = []
     def FileCollection classpath
     def int compliance
 
@@ -53,6 +54,7 @@ class SpoonAndroidTask extends DefaultTask {
         Collection<Processor> processorsClasses = processors.collect {
             it -> this.class.classLoader.loadClass(it)?.newInstance()
         } as Collection<Processor>
+        processorsClasses.addAll(processorsInstance)
         compiler.process(processorsClasses);
         compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
     }
