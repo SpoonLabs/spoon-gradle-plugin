@@ -1,6 +1,7 @@
 package fr.inria.gforge.spoon
 
 import org.gradle.api.file.FileCollection
+import spoon.processing.Processor
 
 class SpoonExtension {
     /** True to active the debug mode. */
@@ -20,6 +21,9 @@ class SpoonExtension {
 
     /** List of processors. */
     def String[] processors = []
+
+    /** List of already instantiated processors. */
+    Processor[] processorsInstance = []
 
     /** True to active the compilation of original sources. */
     def boolean compileOriginalSources
