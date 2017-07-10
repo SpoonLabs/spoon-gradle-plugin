@@ -17,7 +17,7 @@ buildscript {
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
 		          name: 'spoon-gradle-plugin', 
-		          version:'1.0'
+		          version:'1.1'
     }
 }
 
@@ -49,7 +49,7 @@ buildscript {
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
 			      name: 'spoon-gradle-plugin', 
-			      version:'1.0'
+			      version:'1.1'
         classpath group: 'fr.inria.gforge.spoon', 
 			      name: 'spoon-processors', 
 			      version:'1.0-SNAPSHOT'
