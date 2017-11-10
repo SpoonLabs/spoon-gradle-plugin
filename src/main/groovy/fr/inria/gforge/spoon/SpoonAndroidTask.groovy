@@ -3,6 +3,7 @@ package fr.inria.gforge.spoon
 import fr.inria.gforge.spoon.internal.AndroidSpoonCompiler
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
 import spoon.OutputType
 import spoon.SpoonModelBuilder
@@ -19,6 +20,7 @@ class SpoonAndroidTask extends DefaultTask {
     def boolean noClasspath
     def String[] processors = []
     Processor[] processorsInstance = []
+    @Classpath
     def FileCollection classpath
     def int compliance
 
