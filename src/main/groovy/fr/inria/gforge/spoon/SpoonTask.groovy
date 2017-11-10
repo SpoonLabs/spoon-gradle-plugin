@@ -2,6 +2,7 @@ package fr.inria.gforge.spoon
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
 import spoon.Launcher
 
@@ -11,6 +12,7 @@ class SpoonTask extends DefaultTask {
     def boolean preserveFormatting
     def boolean noClasspath
     def String[] processors = []
+    @Classpath
     def FileCollection classpath
     def int compliance
 

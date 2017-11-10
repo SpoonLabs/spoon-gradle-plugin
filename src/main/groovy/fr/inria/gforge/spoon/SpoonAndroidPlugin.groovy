@@ -31,7 +31,7 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                         String variantName = variant.name
                         def variantDirName = variant.dirName
 
-                        def compileJavaTask = variant.javaCompile;
+                        def compileJavaTask = variant.javaCompiler;
                         if (!project.spoon.outFolder) {
                             project.spoon.outFolder = project.file("${project.buildDir}/generated-sources/spoon")
                         }
@@ -76,6 +76,7 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                                         return project.files(paths);
                                     }
                         }
+
                         // Inserts spoon task before compiling.
                         compileJavaTask.dependsOn spoonTask
                     }
