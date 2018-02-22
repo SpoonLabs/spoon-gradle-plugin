@@ -54,6 +54,18 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                             compliance = project.spoon.compliance
                         }
 
+                        def spoonCheckTask = project.task("spoonCheck${variantName.capitalize()}", type: SpoonAndroidCheckTask, dependsOn: "generate${variantName.capitalize()}Sources") {
+                            srcFolders = variantSrcFolders
+                            outFolder = spoonOutFolder
+                            preserveFormatting = project.spoon.preserveFormatting
+                            noClasspath = project.spoon.noClasspath
+                            processors = project.spoon.processors
+                            processorsInstance = project.spoon.processorsInstance
+                            classpath = compileJavaTask.classpath + Utils.getAndroidSdk(project)
+                            srcPath = variantSrcPath
+                            compliance = project.spoon.compliance
+                        }
+
                         // Changes source folder if the user don't would like use the original source.
                         if (!project.spoon.compileOriginalSources) {
                             def files = variantSrcPath.files
@@ -78,7 +90,17 @@ class SpoonAndroidPlugin implements Plugin<Project> {
                         }
 
                         // Inserts spoon task before compiling.
-                        compileJavaTask.dependsOn spoonTask
+                        switch (project.extensions.spoon.goal) {
+                            case SpoonTaskType.GENERATE:
+                                compileJavaTask.dependsOn spoonTask
+                                break
+                            case SpoonTaskType.CHECK:
+                                compileJavaTask.dependsOn spoonCheckTask
+                                break
+                            default:
+                                project.logger.error("You must define a goal.")
+
+                        }
                     }
                 }
         )

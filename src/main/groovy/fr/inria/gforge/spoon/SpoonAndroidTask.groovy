@@ -1,64 +1,68 @@
 package fr.inria.gforge.spoon
 
-import fr.inria.gforge.spoon.internal.AndroidSpoonCompiler
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.TaskAction
+import spoon.Launcher
 import spoon.OutputType
-import spoon.SpoonModelBuilder
+import spoon.compiler.Environment
 import spoon.processing.Processor
-import spoon.reflect.factory.FactoryImpl
-import spoon.support.DefaultCoreFactory
-import spoon.support.StandardEnvironment
 
 class SpoonAndroidTask extends DefaultTask {
-    def FileCollection srcFolders
-    def FileCollection srcPath
-    def File outFolder
-    def boolean preserveFormatting
-    def boolean noClasspath
-    def String[] processors = []
+    FileCollection srcFolders
+    FileCollection srcPath
+    File outFolder
+    boolean preserveFormatting
+    boolean noClasspath
+    String[] processors = []
     Processor[] processorsInstance = []
     @Classpath
-    def FileCollection classpath
-    def int compliance
+    FileCollection classpath
+    int compliance
 
-    @TaskAction
-    void run() {
+    void init() {
         def log = project.logger
         printEnvironment(log.&debug)
         if (project.spoon.debug) {
             printEnvironment(System.out.&println)
         }
 
-        // No source code to spoon.
-        if (srcFolders.size() == 0) {
-            return;
-        }
+    }
 
-        def environment = new StandardEnvironment()
+    void configureEnvironment(Environment environment) {
         environment.setComplianceLevel(compliance)
         environment.setNoClasspath(noClasspath)
         environment.setPreserveLineNumbers(preserveFormatting)
-        SpoonModelBuilder compiler = new AndroidSpoonCompiler(new FactoryImpl(new DefaultCoreFactory(), environment));
+        environment.setSourceOutputDirectory(outFolder)
+        environment.setSourceClasspath(classpath.asPath.split(":"))
+        environment.setOutputType(OutputType.COMPILATION_UNITS)
+    }
 
-        // configure spoon
-        compiler.setSourceOutputDirectory(outFolder);
-        compiler.setSourceClasspath(classpath.asPath.split(":"))
+    @TaskAction
+    void run() {
+        init()
+        // No source code to spoon.
+        if (srcFolders.size() == 0) {
+            project.logger.debug("No source file defined.")
+            return
+        }
 
-        srcFolders.files.each { directory -> compiler.addInputSource(directory) }
-        srcPath.files.each { directory -> compiler.addGeneratedDirectory(directory) }
+        Launcher launcher = new Launcher()
+        configureEnvironment(launcher.getEnvironment())
 
-        // Build spoon model
-        compiler.build();
+        srcFolders.files.each { directory -> launcher.addInputResource(directory.getPath()) }
+        srcPath.files.each { directory -> launcher.addInputResource(directory.getPath()) }
 
-        Collection<Processor> processorsClasses = processors.collect {
-            it -> this.class.classLoader.loadClass(it)?.newInstance()
-        } as Collection<Processor>
-        processorsClasses.addAll(processorsInstance)
-        compiler.process(processorsClasses);
-        compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+
+        processors.collect {
+            it -> launcher.addProcessor(it)
+        }
+        processorsInstance.collect {
+            it -> launcher.addProcessor(it)
+        }
+
+        launcher.run();
     }
 
     def printEnvironment(printer) {
