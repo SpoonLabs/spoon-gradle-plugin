@@ -15,9 +15,9 @@ buildscript {
        mavenCentral()
     }
     dependencies {
-        classpath group: 'fr.inria.gforge.spoon', 
-		          name: 'spoon-gradle-plugin', 
-		          version:'1.2'
+        classpath group: 'fr.inria.gforge.spoon',
+		          name: 'spoon-gradle-plugin',
+		          version:'1.3'
     }
 }
 
@@ -35,7 +35,7 @@ Spoon can use processors to analyze and transform source code.
 
 To add processors, one must:
 
-1. add a dependency  in the `buildscript` block. 
+1. add a dependency  in the `buildscript` block.
 2. configure spoon.processors (you must specify the full qualified name).
 
 In the example below, we add processor `fr.inria.gforge.spoon.processors.CountStatementProcessor` and the dependency necessary to locate the processor.
@@ -47,11 +47,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'fr.inria.gforge.spoon', 
-			      name: 'spoon-gradle-plugin', 
-			      version:'1.2'
-        classpath group: 'fr.inria.gforge.spoon', 
-			      name: 'spoon-processors', 
+        classpath group: 'fr.inria.gforge.spoon',
+			      name: 'spoon-gradle-plugin',
+			      version:'1.3'
+        classpath group: 'fr.inria.gforge.spoon',
+			      name: 'spoon-processors',
 			      version:'1.0-SNAPSHOT'
     }
 }
