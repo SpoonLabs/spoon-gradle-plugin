@@ -35,7 +35,7 @@ class SpoonAndroidTask extends DefaultTask {
         environment.setNoClasspath(noClasspath)
         environment.setPreserveLineNumbers(preserveFormatting)
         environment.setSourceOutputDirectory(outFolder)
-        environment.setSourceClasspath(classpath.asPath.split(":"))
+        environment.setSourceClasspath(classpath.asPath.split(File.pathSeparator))
         environment.setOutputType(OutputType.COMPILATION_UNITS)
     }
 
