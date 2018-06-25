@@ -40,7 +40,7 @@ class SpoonTask extends DefaultTask {
             addKey(params, '-x')
         }
         if (processors.size() != 0) {
-            addParam(params, '-p', processors.join(':'))
+            addParam(params, '-p', processors.join(File.separator))
         }
         if (!classpath.asPath.empty) {
             addParam(params, '--source-classpath', classpath.asPath)
