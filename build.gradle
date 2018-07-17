@@ -122,4 +122,4 @@ uploadArchives {
 
 
 group = 'fr.inria.gforge.spoon'
-version ='1.4-SNAPSHOT'
+version ='1.5-SNAPSHOT'
