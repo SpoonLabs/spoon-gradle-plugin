@@ -5,36 +5,31 @@ import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertNull
-import static org.junit.Assert.assertTrue
+import static org.junit.Assert.*
 
 class SpoonPluginTest {
     private Project project
 
     @Before
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         project = buildEvaluatableProject()
     }
 
     @Test
-    public void testSpoonPluginAddsSpoonTask() throws Exception {
+    void testSpoonPluginAddsSpoonTask() throws Exception {
         project.evaluate()
 
         assertTrue(this.project.tasks.spoon instanceof SpoonTask)
     }
 
     @Test
-    public void testExtensionWithDefaultValues() throws Exception {
+    void testExtensionWithDefaultValues() throws Exception {
         project.evaluate()
 
         assertEquals(null, project.spoon.srcFolders)
-        String expected = "${project.buildDir.absolutePath}/generated-sources/spoon"
+        String expected = "${project.buildDir.absolutePath}${File.separator}generated-sources${File.separator}spoon"
         assertEquals(expected, project.spoon.outFolder.absolutePath)
         assertFalse(project.spoon.preserveFormatting)
         assertFalse(project.spoon.noClasspath)
@@ -42,7 +37,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesDebugModeExtensionValue() throws Exception {
+    void testChangesDebugModeExtensionValue() throws Exception {
         project.spoon {
             debug = true
         }
@@ -52,7 +47,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesSrcFoldersExtensionValue() throws Exception {
+    void testChangesSrcFoldersExtensionValue() throws Exception {
         project.spoon {
             srcFolders = project.files('.')
         }
@@ -64,18 +59,18 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesOutFolderExtensionValue() throws Exception {
+    void testChangesOutFolderExtensionValue() throws Exception {
         project.spoon {
             outFolder = project.file('build/spoon')
         }
         project.evaluate()
 
-        final String expected = "${project.buildDir.absolutePath}/spoon"
+        final String expected = "${project.buildDir.absolutePath}${File.separator}spoon"
         assertEquals(expected, project.spoon.outFolder.absolutePath)
     }
 
     @Test
-    public void testChangesPreserveFormattingExtensionValue() throws Exception {
+    void testChangesPreserveFormattingExtensionValue() throws Exception {
         project.spoon {
             preserveFormatting = true
         }
@@ -85,7 +80,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesNoClasspathExtensionValue() throws Exception {
+    void testChangesNoClasspathExtensionValue() throws Exception {
         project.spoon {
             noClasspath = true
         }
@@ -95,7 +90,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesProcessorsExtensionValue() throws Exception {
+    void testChangesProcessorsExtensionValue() throws Exception {
         project.spoon {
             processors = ['fr.inria.gforge.spoon.Processor']
         }
@@ -106,7 +101,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testChangesComplianceValue() throws Exception {
+    void testChangesComplianceValue() throws Exception {
         project.spoon {
             compliance = 8
         }
@@ -116,26 +111,25 @@ class SpoonPluginTest {
     }
 
     @Test(expected = PluginApplicationException.class)
-    public void testLaunchPluginWithoutJavaPlugin() throws Exception {
+    void testLaunchPluginWithoutJavaPlugin() throws Exception {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'spoon'
         project.evaluate()
     }
 
     @Test
-    @Ignore // https://issues.gradle.org/browse/GRADLE-1715
-    public void testExecutionOfSpoonTask() throws Exception {
+    void testExecutionOfSpoonTask() throws Exception {
         project.spoon {
             srcFolders = project.files('.')
         }
         project.evaluate()
         executeSpoon(project)
 
-        assertTrue(project.file("${project.buildDir}/generated-sources/spoon").exists())
+        assertTrue(project.file("${project.buildDir}${File.separator}generated-sources${File.separator}spoon").exists())
     }
 
     @Test
-    public void testClasspathWithAProjectWithCompileDependencies() throws Exception {
+    void testClasspathWithAProjectWithCompileDependencies() throws Exception {
         project.repositories {
             mavenCentral()
         }
@@ -150,7 +144,7 @@ class SpoonPluginTest {
     }
 
     @Test
-    public void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
+    void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
         project.evaluate()
 
         assertNull(project.tasks.spoon.classpath.files.find {
@@ -164,8 +158,7 @@ class SpoonPluginTest {
 
     private static executeTask(Project project, String task) {
         def spoon = project.getTasksByName(task, true).first()
-        spoon.actions.each { Action action ->
-            action.execute(spoon)
+        spoon.actions.each { Action action -> action.execute(spoon)
         }
     }
 

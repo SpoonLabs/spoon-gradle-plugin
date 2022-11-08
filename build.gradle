@@ -3,7 +3,8 @@ apply plugin: 'maven'
 
 repositories {
     mavenCentral()
-    maven{
+    google()
+    maven {
         url 'http://spoon.gforge.inria.fr/repositories/releases'
     }
 }
@@ -12,16 +13,22 @@ configurations {
 }
 
 dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation('fr.inria.gforge.spoon:spoon-core:10.2.0')
+    implementation('com.android.tools.build:gradle:4.0.2')
 
-    compile gradleApi()
-    compile localGroovy()
-    compile('fr.inria.gforge.spoon:spoon-core:7.0.0')
-    testCompile 'junit:junit:4.11'
-    compile('com.android.tools.build:gradle:2.3.0')
+    testImplementation 'junit:junit:4.13.2'
 }
 
-jar{
-    from (configurations.releaseJars.collect {it.isDirectory() ? it : zipTree(it)}){
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+jar {
+    from(configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude 'META-INF/MANIFEST.MF'
         exclude 'META-INF/*.SF'
         exclude 'META-INF/*.DSA'
@@ -45,33 +52,31 @@ ext.commonLicense = {
     url 'http://www.gnu.org/licenses/lgpl.html'
 }
 
-ext.devs = [
-        {
-            id 'GerardPaligot'
-            name 'Gerard Paligot'
-            email 'gerard.paligot.inria.fr'
-        },
-        {
-            id 'surli'
-            name 'Simon Urli'
-            email 'simon.urli@inria.fr'
-        },
-        {
-            id 'monperrus'
-            name 'Martin Monperrus'
-            email 'martin.monperrus@univ-lille1.fr'
-        },
-        {
-            id 'paillardf'
-            name 'Florian Paillard'
-            email 'paillard.f@gmail.com'
-        },
-        {
-            id 'petitpre'
-            name 'Nicolas Petitprez'
-            email 'nicolas.petitprez@inria.fr'
-        }
-]
+ext.devs = [{
+                id 'GerardPaligot'
+                name 'Gerard Paligot'
+                email 'gerard.paligot.inria.fr'
+            },
+            {
+                id 'surli'
+                name 'Simon Urli'
+                email 'simon.urli@inria.fr'
+            },
+            {
+                id 'monperrus'
+                name 'Martin Monperrus'
+                email 'martin.monperrus@univ-lille1.fr'
+            },
+            {
+                id 'paillardf'
+                name 'Florian Paillard'
+                email 'paillard.f@gmail.com'
+            },
+            {
+                id 'petitpre'
+                name 'Nicolas Petitprez'
+                email 'nicolas.petitprez@inria.fr'
+            }]
 
 
 task javadocJar(type: Jar, dependsOn: groovydoc) {
@@ -120,6 +125,5 @@ uploadArchives {
     }
 }
 
-
 group = 'fr.inria.gforge.spoon'
-version ='1.5-SNAPSHOT'
+version = '1.5-SNAPSHOT'

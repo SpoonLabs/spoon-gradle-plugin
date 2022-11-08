@@ -15,11 +15,8 @@ ext.nexusRelease = "${nexusUrl}/service/local/staging/deploy/maven2/"
 ext.nexusSnapshot = "${nexusUrl}/content/repositories/snapshots/"
 
 private boolean signingConfigured() {
-    return project.hasProperty("signing.keyId") && project.hasProperty("signing.password") \
-      && project.hasProperty("signing.secretKeyRingFile")
+    return project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile")
 }
-
-
 
 allprojects {
     apply plugin: 'maven'

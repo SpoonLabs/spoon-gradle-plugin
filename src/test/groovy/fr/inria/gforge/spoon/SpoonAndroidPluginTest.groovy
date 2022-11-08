@@ -16,19 +16,19 @@ class SpoonAndroidPluginTest {
     private Project project
 
     @Before
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         project = buildEvaluatableProject('com.android.application')
     }
 
     @Test
-    public void testSpoonAndroidPluginAddsSpoonAndroidTask() throws Exception {
+    void testSpoonAndroidPluginAddsSpoonAndroidTask() throws Exception {
         project.evaluate()
 
         assertTrue(project.tasks.spoonDebug instanceof SpoonAndroidTask)
     }
 
     @Test
-    public void testExtensionWithDefaultValues() throws Exception {
+    void testExtensionWithDefaultValues() throws Exception {
         project.evaluate()
 
         assertEquals(null, project.spoon.srcFolders)
@@ -40,7 +40,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesDebugModeExtensionValue() throws Exception {
+    void testChangesDebugModeExtensionValue() throws Exception {
         project.spoon {
             debug = true
         }
@@ -50,7 +50,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesOutFolderExtensionValue() throws Exception {
+    void testChangesOutFolderExtensionValue() throws Exception {
         project.spoon {
             outFolder = project.file('build/spoon')
         }
@@ -61,7 +61,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesPreserveFormattingExtensionValue() throws Exception {
+    void testChangesPreserveFormattingExtensionValue() throws Exception {
         project.spoon {
             preserveFormatting = true
         }
@@ -71,7 +71,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesNoClasspathExtensionValue() throws Exception {
+    void testChangesNoClasspathExtensionValue() throws Exception {
         project.spoon {
             noClasspath = true
         }
@@ -81,7 +81,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesProcessorsExtensionValue() throws Exception {
+    void testChangesProcessorsExtensionValue() throws Exception {
         project.spoon {
             processors = ['fr.inria.gforge.spoon.Processor']
         }
@@ -92,7 +92,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testChangesComplianceValue() throws Exception {
+    void testChangesComplianceValue() throws Exception {
         project.spoon {
             compliance = 8
         }
@@ -102,14 +102,14 @@ class SpoonAndroidPluginTest {
     }
 
     @Test(expected = PluginApplicationException.class)
-    public void testLaunchPluginWithoutAndroidApplicationOrLibraryPlugin() throws Exception {
+    void testLaunchPluginWithoutAndroidApplicationOrLibraryPlugin() throws Exception {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'spoon-android'
         project.evaluate()
     }
 
     @Test
-    public void testClasspathWithAProjectWithCompileDependencies() throws Exception {
+    void testClasspathWithAProjectWithCompileDependencies() throws Exception {
         project.repositories {
             mavenCentral()
         }
@@ -124,7 +124,7 @@ class SpoonAndroidPluginTest {
     }
 
     @Test
-    public void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
+    void testNoClasspathWhenProjectDontHaveDependencies() throws Exception {
         project.evaluate()
 
         assertNull(project.tasks.spoonDebug.classpath.files.find {
